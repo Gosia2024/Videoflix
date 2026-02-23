@@ -1,6 +1,8 @@
+"""
+Serializers for video-related API responses.
+"""
 from rest_framework import serializers
 from .models import Video
-
 
 class VideoSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()

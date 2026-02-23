@@ -1,3 +1,10 @@
+"""
+Authentication and account management API views.
+
+This module provides endpoints for user registration, login,
+JWT handling, account activation, logout, and password reset
+workflows for the Videoflix backend.
+"""
 import token
 import uuid
 
@@ -49,13 +56,6 @@ class RegisterView(APIView):
 )
         print("ACTIVATION LINK:", activation_link)   
 
-        # activation_link = build_activation_link(user)
-
-        # uid = urlsafe_base64_encode(force_bytes(user.pk))
-        # token = default_token_generator.make_token(user)
-
-        # activation_link = f"http://localhost:8000/api/activate/{uid}/{token}/"
-       
         send_mail(
             subject="Activate your account",
             message=f"Activate account: {activation_link}",

@@ -1,6 +1,11 @@
+"""
+Utility functions for HLS video conversion.
+
+Provides helpers for creating output directories,
+building FFmpeg commands, and executing video processing.
+"""
 import subprocess
 from pathlib import Path
-
 
 RESOLUTION_MAP = {
     "480p": "854x480",
@@ -8,12 +13,10 @@ RESOLUTION_MAP = {
     "1080p": "1920x1080",
 }
 
-
 def create_output_directory(base_path: Path, resolution: str) -> Path:
     output_path = base_path / resolution
     output_path.mkdir(parents=True, exist_ok=True)
     return output_path
-
 
 def build_ffmpeg_command(input_file: str, output_file: str, resolution: str):
     scale_value = RESOLUTION_MAP[resolution]

@@ -5,6 +5,12 @@ User = get_user_model()
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer responsible for user registration.
+
+    Ensures password confirmation matches and creates
+    an inactive user account pending email activation.
+    """
     confirmed_password = serializers.CharField(write_only=True)
 
     class Meta:
