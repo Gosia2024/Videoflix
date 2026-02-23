@@ -238,3 +238,4 @@ REST_FRAMEWORK = {
     ),
 }
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+FRONTEND_URL = "http://127.0.0.1:5500/pages/auth"

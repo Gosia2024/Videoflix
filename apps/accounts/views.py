@@ -1,3 +1,6 @@
+import token
+import uuid
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -14,6 +17,9 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from .serializers import RegisterSerializer
 
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
 User = get_user_model()
 
 
@@ -37,11 +43,22 @@ class RegisterView(APIView):
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        activation_link = f"http://localhost:8000/api/activate/{uid}/{token}/"
+        activation_link = (
+        f"http://127.0.0.1:5500/pages/auth/activate.html"
+        f"?uid={uid}&token={token}"
+)
+        print("ACTIVATION LINK:", activation_link)   
 
+        # activation_link = build_activation_link(user)
+
+        # uid = urlsafe_base64_encode(force_bytes(user.pk))
+        # token = default_token_generator.make_token(user)
+
+        # activation_link = f"http://localhost:8000/api/activate/{uid}/{token}/"
+       
         send_mail(
             subject="Activate your account",
-            message=f"Click the link to activate your account:\n{activation_link}",
+            message=f"Activate account: {activation_link}",
             from_email="noreply@videoflix.com",
             recipient_list=[user.email],
             fail_silently=True,
@@ -107,7 +124,6 @@ class LoginView(APIView):
 
         return response
 
-
 # =========================
 # ACTIVATE ACCOUNT
 # =========================
@@ -121,23 +137,23 @@ class ActivateAccountView(APIView):
             user = User.objects.get(pk=uid)
         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
             return Response(
-                {"detail": "Activation failed."},
+                {"message": "Invalid activation link."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        if default_token_generator.check_token(user, token):
-            user.is_active = True
-            user.save()
+        if not default_token_generator.check_token(user, token):
             return Response(
-                {"detail": "Account successfully activated."},
-                status=status.HTTP_200_OK,
+                {"message": "Invalid or expired activation link."},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        return Response(
-            {"detail": "Invalid or expired activation link."},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        user.is_active = True
+        user.save()
 
+        return Response(
+            {"message": "Account successfully activated!"},
+            status=status.HTTP_200_OK,
+        )
 
 # =========================
 # LOGOUT
@@ -291,3 +307,5 @@ class PasswordConfirmView(APIView):
             {"detail": "Password successfully reset."},
             status=status.HTTP_200_OK,
         )
+    
+
