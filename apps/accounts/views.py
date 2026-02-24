@@ -284,6 +284,84 @@ class RefreshTokenView(APIView):
             )
 
 
+# # =========================
+# # PASSWORD RESET
+# # =========================
+# class PasswordResetView(APIView):
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+
+#     def post(self, request):
+#         email = request.data.get("email")
+
+#         if not email:
+#             return Response(
+#                 {"detail": "Email is required."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         try:
+#             user = User.objects.get(email=email)
+
+#             uid = urlsafe_base64_encode(force_bytes(user.pk))
+#             token = default_token_generator.make_token(user)
+
+#             reset_link = f"http://localhost:8000/api/password_confirm/{uid}/{token}/"
+#             print("RESET LINK:", reset_link)
+
+#         except User.DoesNotExist:
+#             pass
+
+#         return Response(
+#             {"detail": "If account exists, reset email was sent."},
+#             status=status.HTTP_200_OK,
+#         )
+
+
+# class PasswordConfirmView(APIView):
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
+
+#     def post(self, request, uidb64, token):
+#         try:
+#             uid = force_str(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#             return Response(
+#                 {"detail": "Invalid reset link."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         if not default_token_generator.check_token(user, token):
+#             return Response(
+#                 {"detail": "Invalid or expired token."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         new_password = request.data.get("new_password")
+#         confirm_password = request.data.get("confirm_password")
+
+#         if not new_password or not confirm_password:
+#             return Response(
+#                 {"detail": "Both password fields are required."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         if new_password != confirm_password:
+#             return Response(
+#                 {"detail": "Passwords do not match."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+
+#         user.set_password(new_password)
+#         user.save()
+
+#         return Response(
+#             {"detail": "Password successfully reset."},
+#             status=status.HTTP_200_OK,
+#         )
+    
+
 # =========================
 # PASSWORD RESET
 # =========================
@@ -306,17 +384,94 @@ class PasswordResetView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            reset_link = f"http://localhost:8000/api/password_confirm/{uid}/{token}/"
-            print("RESET LINK:", reset_link)
+            # 🔥 link prowadzi do FRONTENDU
+            reset_link = (
+                f"http://127.0.0.1:5500/pages/auth/confirm_password.html"
+                f"?uid={uid}&token={token}"
+            )
+
+            html_content = render_to_string(
+                "emails/password_reset.html",
+                {
+                    "reset_link": reset_link,
+                    "user": user,
+                },
+            )
+
+            email_message = EmailMultiAlternatives(
+                subject="Reset your password",
+                body=f"Reset your password: {reset_link}",
+                from_email="noreply@videoflix.com",
+                to=[user.email],
+            )
+
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
 
         except User.DoesNotExist:
+            # bezpieczeństwo – nie mówimy czy user istnieje
             pass
 
         return Response(
             {"detail": "If account exists, reset email was sent."},
             status=status.HTTP_200_OK,
         )
+    
+    # =========================
+# PASSWORD RESET
+# =========================
+class PasswordResetView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
 
+    def post(self, request):
+        email = request.data.get("email")
+
+        if not email:
+            return Response(
+                {"detail": "Email is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(email=email)
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+
+            # 🔥 link prowadzi do FRONTENDU
+            reset_link = (
+                f"http://127.0.0.1:5500/pages/auth/confirm_password.html"
+                f"?uid={uid}&token={token}"
+            )
+
+            html_content = render_to_string(
+                "emails/password_reset.html",
+                {
+                    "reset_link": reset_link,
+                    "user": user,
+                },
+            )
+
+            email_message = EmailMultiAlternatives(
+                subject="Reset your password",
+                body=f"Reset your password: {reset_link}",
+                from_email="noreply@videoflix.com",
+                to=[user.email],
+            )
+
+            email_message.attach_alternative(html_content, "text/html")
+            email_message.send()
+
+        except User.DoesNotExist:
+            # bezpieczeństwo – nie mówimy czy user istnieje
+            pass
+
+        return Response(
+            {"detail": "If account exists, reset email was sent."},
+            status=status.HTTP_200_OK,
+        )
+   
 
 class PasswordConfirmView(APIView):
     permission_classes = [AllowAny]
@@ -360,5 +515,3 @@ class PasswordConfirmView(APIView):
             {"detail": "Password successfully reset."},
             status=status.HTTP_200_OK,
         )
-    
-
