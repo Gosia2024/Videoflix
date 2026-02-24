@@ -24,8 +24,8 @@ class Video(models.Model):
     file = models.FileField(
         upload_to="videos/",
         validators=[FileExtensionValidator(allowed_extensions=["mp4"])],
-        null=True,
-        blank=True
+
+           
     )
 
     def __str__(self):
