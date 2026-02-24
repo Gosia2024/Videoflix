@@ -7,6 +7,7 @@ workflows for the Videoflix backend.
 """
 import token
 import uuid
+from django.conf import settings
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -85,33 +86,26 @@ class RegisterView(APIView):
         user.is_active = False
         user.save()
 
-        # Generate uid + token
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
-        # Link do FRONTENDU (zgodnie z projektem)
         activation_link = (
-            f"http://127.0.0.1:5500/pages/auth/activate.html"
+            f"{settings.FRONTEND_URL}/pages/auth/activate.html"
             f"?uid={uid}&token={token}"
         )
-
-        # Render HTML template
-        subject = "Activate your account"
 
         html_content = render_to_string(
             "emails/activate_account.html",
             {
                 "activation_link": activation_link,
                 "user": user,
-            }
+            },
         )
 
-        text_content = strip_tags(html_content)
-
         email = EmailMultiAlternatives(
-            subject=subject,
-            body=text_content,
-            from_email="noreply@videoflix.com",
+            subject="Activate your account",
+            body=strip_tags(html_content),
+            from_email=settings.DEFAULT_FROM_EMAIL,
             to=[user.email],
         )
 
@@ -384,9 +378,8 @@ class PasswordResetView(APIView):
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
 
-            # 🔥 link prowadzi do FRONTENDU
             reset_link = (
-                f"http://127.0.0.1:5500/pages/auth/confirm_password.html"
+                f"{settings.FRONTEND_URL}/pages/auth/confirm_password.html"
                 f"?uid={uid}&token={token}"
             )
 
@@ -400,8 +393,8 @@ class PasswordResetView(APIView):
 
             email_message = EmailMultiAlternatives(
                 subject="Reset your password",
-                body=f"Reset your password: {reset_link}",
-                from_email="noreply@videoflix.com",
+                body=strip_tags(html_content),
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[user.email],
             )
 
@@ -409,7 +402,6 @@ class PasswordResetView(APIView):
             email_message.send()
 
         except User.DoesNotExist:
-            # bezpieczeństwo – nie mówimy czy user istnieje
             pass
 
         return Response(
