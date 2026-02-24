@@ -29,10 +29,48 @@ from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 User = get_user_model()
 
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+# =========================
+# # REGISTER
+# # =========================
+# class RegisterView(APIView):
+#     permission_classes = [AllowAny]
+#     authentication_classes = []
 
-# =========================
-# REGISTER
-# =========================
+#     def post(self, request):
+#         serializer = RegisterSerializer(data=request.data)
+
+#         if not serializer.is_valid():
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         user = serializer.save()
+#         user.is_active = False
+#         user.save()
+
+#         uid = urlsafe_base64_encode(force_bytes(user.pk))
+#         token = default_token_generator.make_token(user)
+
+#         activation_link = (
+#         f"http://127.0.0.1:5500/pages/auth/activate.html"
+#     f"?uid={uid}&token={token}"
+# )
+
+#         print("ACTIVATION LINK:", activation_link)   
+
+#         send_mail(
+#             subject="Activate your account",
+#             message=f"Activate account: {activation_link}",
+#             from_email="noreply@videoflix.com",
+#             recipient_list=[user.email],
+#             fail_silently=True,
+#         )
+
+#         return Response(
+#             {"detail": "User registered successfully. Check your email."},
+#             status=status.HTTP_201_CREATED,
+#         )
 class RegisterView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -47,28 +85,43 @@ class RegisterView(APIView):
         user.is_active = False
         user.save()
 
+        # Generate uid + token
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
 
+        # Link do FRONTENDU (zgodnie z projektem)
         activation_link = (
-        f"http://127.0.0.1:5500/pages/auth/activate.html"
-        f"?uid={uid}&token={token}"
-)
-        print("ACTIVATION LINK:", activation_link)   
-
-        send_mail(
-            subject="Activate your account",
-            message=f"Activate account: {activation_link}",
-            from_email="noreply@videoflix.com",
-            recipient_list=[user.email],
-            fail_silently=True,
+            f"http://127.0.0.1:5500/pages/auth/activate.html"
+            f"?uid={uid}&token={token}"
         )
+
+        # Render HTML template
+        subject = "Activate your account"
+
+        html_content = render_to_string(
+            "emails/activate_account.html",
+            {
+                "activation_link": activation_link,
+                "user": user,
+            }
+        )
+
+        text_content = strip_tags(html_content)
+
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=text_content,
+            from_email="noreply@videoflix.com",
+            to=[user.email],
+        )
+
+        email.attach_alternative(html_content, "text/html")
+        email.send()
 
         return Response(
             {"detail": "User registered successfully. Check your email."},
             status=status.HTTP_201_CREATED,
         )
-
 
 # =========================
 # LOGIN
