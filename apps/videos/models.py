@@ -14,7 +14,12 @@ class Video(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     thumbnail = models.ImageField(upload_to="thumbnails/")
-    category = models.CharField(max_length=100)
+    CATEGORY_CHOICES = [
+    ("action", "Action"),
+    ("comedy", "Comedy"),
+    ("drama", "Drama"),
+]
+    category = models.CharField(max_length=100, choices=CATEGORY_CHOICES)
 
     file = models.FileField(
         upload_to="videos/",
