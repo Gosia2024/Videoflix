@@ -1,18 +1,28 @@
-# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# Django
 db.sqlite3
 media/
+staticfiles/
 
-# Environment
 .env
-venv/
+.env.*
+!.env.template
 
-# IDE
+venv/
+env/
+.venv/
+
 .idea/
 .vscode/
+*.swp
 
-# Logs
 *.log
+
+.DS_Store
+Thumbs.db
+
+.coverage
+htmlcov/
+.pytest_cache/
