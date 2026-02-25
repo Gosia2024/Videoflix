@@ -18,17 +18,13 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
-
 from .serializers import RegisterSerializer
-
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 User = get_user_model()
-
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -78,9 +74,6 @@ class RegisterView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-# =========================
-# LOGIN
-# =========================
 class LoginView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -132,9 +125,6 @@ class LoginView(APIView):
 
         return response
 
-# =========================
-# ACTIVATE ACCOUNT
-# =========================
 class ActivateAccountView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -163,9 +153,7 @@ class ActivateAccountView(APIView):
             status=status.HTTP_200_OK,
         )
 
-# =========================
-# LOGOUT
-# =========================
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -198,9 +186,6 @@ class LogoutView(APIView):
         return response
 
 
-# =========================
-# REFRESH TOKEN
-# =========================
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -239,10 +224,6 @@ class RefreshTokenView(APIView):
             )
 
 
-
-# =========================
-# PASSWORD RESET
-# =========================
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []
@@ -293,9 +274,6 @@ class PasswordResetView(APIView):
             status=status.HTTP_200_OK,
         )
     
-    # =========================
-# PASSWORD RESET
-# =========================
 class PasswordResetView(APIView):
     permission_classes = [AllowAny]
     authentication_classes = []

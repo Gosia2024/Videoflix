@@ -16,11 +16,6 @@ import os
 from .tasks import convert_video_to_hls
 
 
-# ==========================================
-# VIDEO LIST
-# GET /api/video/
-# ==========================================
-
 class VideoListView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -36,13 +31,7 @@ class VideoListView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# ==========================================
-#HLS MANIFEST
-# GET /api/video/<movie_id>/<resolution>/index.m3u8
-# ==========================================
-
 class VideoManifestView(APIView):
-    # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
     def get(self, request, movie_id, resolution):
 
@@ -72,13 +61,7 @@ class VideoManifestView(APIView):
         )
 
 
-# ==========================================
-#  HLS SEGMENT
-# GET /api/video/<movie_id>/<resolution>/<segment>/
-# ==========================================
-
 class VideoSegmentView(APIView):
-    # permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
     def get(self, request, movie_id, resolution, segment):
