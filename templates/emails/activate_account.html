@@ -2,31 +2,60 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Activate your account</title>
+    <title>Confirm your email</title>
 </head>
-<body style="font-family: Arial, sans-serif; background-color:#f4f4f4; padding:40px;">
+<body style="margin:0; padding:40px; background-color:#f2f2f2; font-family: Arial, sans-serif;">
 
-    <div style="max-width:600px; background:white; padding:30px; border-radius:8px; margin:auto; text-align:center;">
+    <div style="max-width:600px; margin:0 auto; background-color:#f2f2f2;">
 
-        <h2 style="color:#333;">Confirm your email</h2>
+        <!-- LOGO -->
+        <div style="text-align:center; margin-bottom:30px;">
+            <div style="font-size:28px; font-weight:bold; color:#5A3BFF;">
+                &gt; VIDEOFLIX
+            </div>
+        </div>
 
-        <p>Thank you for registering with <strong>Videoflix</strong>.</p>
-        <p>Please click the button below to activate your account:</p>
+        <!-- CONTENT -->
+        <div style="color:#333; font-size:14px; line-height:1.6;">
 
-        <a href="{{ activation_link }}"
-           style="display:inline-block;
-                  padding:12px 25px;
-                  background-color:#4F46E5;
-                  color:white;
-                  text-decoration:none;
-                  border-radius:6px;
-                  margin-top:20px;">
-            Activate account
-        </a>
+            <p>
+                Dear <span style="color:#2F3AEF;">[User's Name]</span>,
+            </p>
 
-        <p style="margin-top:30px; font-size:12px; color:#777;">
-            If you did not create an account, please ignore this email.
-        </p>
+            <p>
+                Thank you for registering with
+                <span style="color:#2F3AEF;">Videoflix</span>.
+                To complete your registration and verify your email address,
+                please click the link below:
+            </p>
+
+            <!-- BUTTON -->
+            <div style="margin:30px 0;">
+                <a href="{{ activation_link }}"
+                   style="
+                        display:inline-block;
+                        padding:12px 30px;
+                        background-color:#2F3AEF;
+                        color:#ffffff;
+                        text-decoration:none;
+                        border-radius:30px;
+                        font-weight:bold;
+                        font-size:14px;
+                   ">
+                    Activate account
+                </a>
+            </div>
+
+            <p style="color:#555;">
+                If you did not create an account with us, please disregard this email.
+            </p>
+
+            <p style="margin-top:30px;">
+                Best regards,<br>
+                Your Videoflix Team.
+            </p>
+
+        </div>
 
     </div>
 
